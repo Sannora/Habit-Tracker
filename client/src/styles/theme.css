@@ -1,0 +1,86 @@
+/* Light Theme (Default) */
+:root {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f8f9fa;
+  --bg-hover: #ecf0f1;
+  
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --text-tertiary: #95a5a6;
+  
+  --border-color: #ecf0f1;
+  --border-hover: #d5dbdb;
+  
+  --sidebar-bg: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  --sidebar-text: rgba(255,255,255,0.8);
+  --sidebar-text-active: #ffffff;
+  --sidebar-hover: rgba(255,255,255,0.1);
+  --sidebar-active: rgba(255,255,255,0.15);
+  
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+  
+  --primary-color: #3498db;
+  --primary-hover: #2980b9;
+  --success-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+  
+  --input-bg: #ffffff;
+  --input-border: #ecf0f1;
+  --input-focus: #3498db;
+  
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  
+  --calendar-day-other: #fafafa;
+  --calendar-day-border: transparent;
+  --calendar-day-hover-border: #3498db;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #252525;
+  --bg-hover: #3a3a3a;
+  
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #808080;
+  
+  --border-color: #3a3a3a;
+  --border-hover: #4a4a4a;
+  
+  --sidebar-bg: linear-gradient(180deg, #1e1e1e 0%, #2a2a2a 100%);
+  --sidebar-text: rgba(255,255,255,0.7);
+  --sidebar-text-active: #ffffff;
+  --sidebar-hover: rgba(255,255,255,0.08);
+  --sidebar-active: rgba(255,255,255,0.12);
+  
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.4);
+  
+  --primary-color: #4a9eff;
+  --primary-hover: #3d8ae0;
+  --success-color: #3edc81;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffa726;
+  
+  --input-bg: #3a3a3a;
+  --input-border: #4a4a4a;
+  --input-focus: #4a9eff;
+  
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  
+  --calendar-day-other: #252525;
+  --calendar-day-border: transparent;
+  --calendar-day-hover-border: #4a9eff;
+}
+
+/* Genel Ayarlamalar */
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
