@@ -7,19 +7,19 @@ A desktop application to track your daily reading habits, visualize progress, an
 ## 🖼️ Screenshots
 
 ### Dashboard
-![Dashboard](assets/dashboard.png)
+<img width="462" height="925" alt="image" src="https://github.com/user-attachments/assets/bd78acd3-cbd8-49d2-933e-af25ebcc9a44" />
 
 ### Heat Map Calendar
-![Heat Map](assets/heatmap.png)
+<img width="290" height="311" alt="image" src="https://github.com/user-attachments/assets/876077b8-90b3-4e76-a2ec-197abe3983d3" />
 
 ### Book Library
-![Book Library](assets/library.png)
+<img width="441" height="925" alt="image" src="https://github.com/user-attachments/assets/8c170955-57d8-453f-a009-797eeca1a7b2" />
 
 ### Statistics & Charts
-![Statistics](assets/stats.png)
+<img width="484" height="921" alt="image" src="https://github.com/user-attachments/assets/11c5e434-a75d-4c7c-80b6-a925bc9bcb10" />
 
 ### Dark Mode
-![Dark Mode](assets/darkmode.png)
+<img width="368" height="913" alt="image" src="https://github.com/user-attachments/assets/c4613937-8011-4be5-9998-b0f882f6dfd0" />
 
 ---
 
