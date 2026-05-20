@@ -183,3 +183,23 @@
   font-size: 0.85rem !important;
   margin-top: 5px !important;
 }
+
+.book-dates {
+  margin-top: 8px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.date-line {
+  opacity: 0.9;
+}
+
+.duration-line {
+  margin-top: 4px;
+  font-weight: 600;
+  color: var(--primary-color);
+}

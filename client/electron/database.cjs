@@ -37,6 +37,7 @@ function initDatabase() {
       cover_color TEXT DEFAULT '#4A90E2',
       start_date DATE,
       end_date DATE,
+      rating REAL DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
@@ -86,8 +87,8 @@ const booksDB = {
   // Yeni kitap ekle
   create: (book) => {
     const stmt = db.prepare(`
-      INSERT INTO books (title, author, total_pages, current_page, status, cover_color, start_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO books (title, author, total_pages, current_page, status, cover_color, start_date, rating)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const result = stmt.run(
       book.title,
@@ -101,15 +102,15 @@ const booksDB = {
     return result.lastInsertRowid;
   },
 
-  // Kitap güncelle
-// Kitap güncelle - GELİŞTİRİLMİŞ VERSİYON
+// Kitap güncelle
 update: (id, book) => {
   const stmt = db.prepare(`
     UPDATE books 
     SET title = ?, author = ?, total_pages = ?, current_page = ?, 
-        status = ?, cover_color = ?
+        status = ?, cover_color = ?, rating = ?
     WHERE id = ?
   `);
+
   stmt.run(
     book.title,
     book.author || null,
@@ -117,8 +118,10 @@ update: (id, book) => {
     book.current_page,
     book.status,
     book.cover_color,
+    book.rating || 0,
     id
   );
+
   return booksDB.getById(id);
 },
 
@@ -194,7 +197,7 @@ const sessionsDB = {
     return result.lastInsertRowid;
   },
 
-    // OKUMA KAYDI GÜNCELLE - YENİ!
+    // OKUMA KAYDI GÜNCELLE
   update: (id, session) => {
     // Önce eski kaydı al
     const oldSession = db.prepare('SELECT * FROM reading_sessions WHERE id = ?').get(id);
@@ -248,7 +251,7 @@ const sessionsDB = {
     return db.prepare('SELECT * FROM reading_sessions WHERE id = ?').get(id);
   },
   
-  // ID'ye göre session getir - YENİ!
+  // ID'ye göre session getir
   getById: (id) => {
     return db.prepare('SELECT * FROM reading_sessions WHERE id = ?').get(id);
   },

@@ -7,6 +7,7 @@ const isDev = !app.isPackaged;
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
+    title: 'Reading Tracker',
     width: 1200,
     height: 800,
     webPreferences: {

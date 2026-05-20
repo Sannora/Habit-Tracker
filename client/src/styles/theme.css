@@ -5,14 +5,14 @@
   --bg-tertiary: #f8f9fa;
   --bg-hover: #ecf0f1;
   
-  --text-primary: #2c3e50;
-  --text-secondary: #7f8c8d;
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
   --text-tertiary: #95a5a6;
   
   --border-color: #ecf0f1;
   --border-hover: #d5dbdb;
   
-  --sidebar-bg: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  --sidebar-bg: linear-gradient(180deg, #222733 0%, #0F172A 100%);
   --sidebar-text: rgba(255,255,255,0.8);
   --sidebar-text-active: #ffffff;
   --sidebar-hover: rgba(255,255,255,0.1);
@@ -21,8 +21,8 @@
   --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
   --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
   
-  --primary-color: #3498db;
-  --primary-hover: #2980b9;
+  --primary-color: #3A86FF;
+  --primary-hover: #2777f7;
   --success-color: #2ecc71;
   --danger-color: #e74c3c;
   --warning-color: #f39c12;
@@ -40,12 +40,12 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
-  --bg-primary: #1a1a1a;
+  --bg-primary: #0F1115;
   --bg-secondary: #2d2d2d;
   --bg-tertiary: #252525;
   --bg-hover: #3a3a3a;
   
-  --text-primary: #e0e0e0;
+  --text-primary: #E8E6E3;
   --text-secondary: #b0b0b0;
   --text-tertiary: #808080;
   
@@ -61,8 +61,8 @@
   --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
   --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.4);
   
-  --primary-color: #4a9eff;
-  --primary-hover: #3d8ae0;
+  --primary-color: #C6A15B;
+  --primary-hover: #cea14d;
   --success-color: #3edc81;
   --danger-color: #ff6b6b;
   --warning-color: #ffa726;

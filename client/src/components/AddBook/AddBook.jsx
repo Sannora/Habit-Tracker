@@ -9,7 +9,8 @@ function AddBook() {
     author: '',
     total_pages: '',
     current_page: '0',
-    cover_color: '#4A90E2'
+    cover_color: '#4A90E2',
+    rating: 0
   });
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +36,6 @@ function AddBook() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validasyon
     if (!formData.title.trim()) {
       alert('Lütfen kitap adını girin!');
       return;
@@ -59,7 +59,6 @@ function AddBook() {
         start_date: new Date().toISOString().split('T')[0]
       });
 
-      // Başarılı, kitaplar sayfasına yönlendir
       navigate('/books');
     } catch (error) {
       console.error('Kitap eklenirken hata:', error);
@@ -93,7 +92,6 @@ function AddBook() {
             />
           </div>
 
-          {/* Yazar */}
           <div className="form-group">
             <label htmlFor="author">Yazar</label>
             <input

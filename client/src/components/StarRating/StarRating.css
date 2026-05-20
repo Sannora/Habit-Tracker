@@ -1,0 +1,46 @@
+.star-container {
+  display: flex;
+  gap: 0;
+}
+
+.star-wrapper {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.star-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.star {
+  font-size: 18px;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* IMPORTANT FIX */
+.star-half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.star-half.left {
+  left: 0;
+}
+
+.star-half.right {
+  right: 0;
+}

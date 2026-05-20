@@ -11,12 +11,18 @@
     "dist": "npm run build && electron-builder"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/free-regular-svg-icons": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/react-fontawesome": "^3.3.1",
     "better-sqlite3": "^9.4.0",
     "date-fns": "^4.1.0",
+    "immer": "^11.1.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.13.0",
-    "recharts": "^3.7.0"
+    "recharts": "^3.7.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.2",
@@ -25,7 +31,8 @@
     "vite": "^7.3.1"
   },
   "build": {
-    "appId": "com.melih.readingtracker",
+    "appId": "com.Sannora.app",
+    "name": "Reading Tracker",
     "productName": "Reading Tracker",
     "asar": true,
     "asarUnpack": [

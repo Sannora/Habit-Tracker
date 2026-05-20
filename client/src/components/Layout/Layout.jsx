@@ -5,11 +5,11 @@ function Layout({ children }) {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: '📊 Dashboard', icon: '📊' },
+    { path: '/', label: '📊 Genel Görünüm', icon: '📊' },
     { path: '/books', label: '📚 Kitaplarım', icon: '📚' },
     { path: '/add-reading', label: '➕ Okuma Ekle', icon: '➕' },
     { path: '/stats', label: '📈 İstatistikler', icon: '📈' },
-    { path: '/settings', label: '⚙️ Ayarlar', icon: '⚙️' }, // YENİ!
+    { path: '/settings', label: '⚙️ Ayarlar', icon: '⚙️' },
   ];
 
   return (

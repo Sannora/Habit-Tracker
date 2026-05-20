@@ -1,181 +1,104 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
+  LineChart, Line,
+  BarChart, Bar,
+  PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { format, subDays, eachDayOfInterval } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { useAppStore } from '../../store/useAppStore';
 import './Stats.css';
 
 function Stats() {
-  const [stats, setStats] = useState({
-    totalPages: 0,
-    dailyAverage: 0,
-    totalBooks: 0,
-    completedBooks: 0,
-    currentStreak: 0,
-    longestStreak: 0
-  });
+  const { fetchAll, getStats, getStreaks, books, sessions, loading } = useAppStore();
+
+  const [range, setRange] = useState(30);
   const [chartData, setChartData] = useState([]);
   const [bookStats, setBookStats] = useState([]);
-  const [timeRange, setTimeRange] = useState(30); // 7, 30, 90 gün
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadStats();
-  }, [timeRange]);
+    fetchAll();
+  }, []);
 
-  const loadStats = async () => {
-    setLoading(true);
-    try {
-      // Temel istatistikler
-      const [totalPages, dailyAvg, allBooks, sessions] = await Promise.all([
-        window.electronAPI.stats.getTotalPages(),
-        window.electronAPI.stats.getDailyAverage(),
-        window.electronAPI.books.getAll(),
-        window.electronAPI.sessions.getAll()
-      ]);
+  useEffect(() => {
+    if (!sessions.length) return;
 
-      const completedBooks = allBooks.filter(b => b.status === 'completed').length;
+    const end = new Date();
+    const start = subDays(end, range - 1);
 
-      // Streak hesaplama
-      const streaks = calculateStreaks(sessions);
+    const days = eachDayOfInterval({ start, end });
 
-      setStats({
-        totalPages,
-        dailyAverage: dailyAvg,
-        totalBooks: allBooks.length,
-        completedBooks,
-        currentStreak: streaks.current,
-        longestStreak: streaks.longest
-      });
+    const data = days.map(d => {
+      const dateStr = format(d, 'yyyy-MM-dd');
 
-      // Grafik verisi oluştur
-      const chartData = generateChartData(sessions, timeRange);
-      setChartData(chartData);
-
-      // Kitap bazlı istatistikler
-      const bookStatsData = generateBookStats(allBooks, sessions);
-      setBookStats(bookStatsData);
-
-      setLoading(false);
-    } catch (error) {
-      console.error('İstatistikler yüklenirken hata:', error);
-      setLoading(false);
-    }
-  };
-
-// Streak (ardışık gün) hesaplama - DÜZELTİLMİŞ VERSİYON
-const calculateStreaks = (sessions) => {
-  if (sessions.length === 0) return { current: 0, longest: 0 };
-
-  // Benzersiz günleri al ve sırala (eskiden yeniye)
-  const uniqueDays = [...new Set(sessions.map(s => s.date))].sort();
-  
-  let currentStreak = 0;
-  let longestStreak = 0;
-  let tempStreak = 1;
-  
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
-
-  // Bugün veya dün okuma var mı kontrol et
-  const hasToday = uniqueDays.includes(today);
-  const hasYesterday = uniqueDays.includes(yesterday);
-
-  if (!hasToday && !hasYesterday) {
-    // Bugün ve dün okuma yok, streak kırılmış
-    currentStreak = 0;
-  } else {
-    // Bugünden geriye doğru kontrol et
-    let checkDate = hasToday ? new Date() : subDays(new Date(), 1);
-    currentStreak = 1;
-
-    for (let i = 1; i < uniqueDays.length; i++) {
-      const previousDay = format(subDays(checkDate, i), 'yyyy-MM-dd');
-      
-      if (uniqueDays.includes(previousDay)) {
-        currentStreak++;
-      } else {
-        break;
-      }
-    }
-  }
-
-  // En uzun seriyi hesapla
-  for (let i = 1; i < uniqueDays.length; i++) {
-    const currentDay = new Date(uniqueDays[i]);
-    const prevDay = new Date(uniqueDays[i - 1]);
-    const diffDays = Math.floor((currentDay - prevDay) / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) {
-      tempStreak++;
-      longestStreak = Math.max(longestStreak, tempStreak);
-    } else {
-      tempStreak = 1;
-    }
-  }
-
-  longestStreak = Math.max(longestStreak, currentStreak, tempStreak);
-
-  return { current: currentStreak, longest: longestStreak };
-};
-
-  // Grafik verisi oluştur
-  const generateChartData = (sessions, days) => {
-    const endDate = new Date();
-    const startDate = subDays(endDate, days - 1);
-    const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
-
-    return dateRange.map(date => {
-      const dateStr = format(date, 'yyyy-MM-dd');
-      const dayTotal = sessions
+      const pages = sessions
         .filter(s => s.date === dateStr)
         .reduce((sum, s) => sum + s.pages_read, 0);
 
       return {
-        date: format(date, 'd MMM', { locale: tr }),
-        pages: dayTotal,
-        fullDate: dateStr
+        date: format(d, 'd MMM', { locale: tr }),
+        pages
       };
     });
-  };
 
-  // Kitap bazlı istatistikler
-  const generateBookStats = (books, sessions) => {
-    return books.map(book => {
-      const bookSessions = sessions.filter(s => s.book_id === book.id);
-      const totalPages = bookSessions.reduce((sum, s) => sum + s.pages_read, 0);
-      
+    setChartData(data);
+
+    const bookData = books.map(b => {
+      const total = sessions
+        .filter(s => s.book_id === b.id)
+        .reduce((sum, s) => sum + s.pages_read, 0);
+
       return {
-        name: book.title,
-        pages: totalPages,
-        color: book.cover_color,
-        progress: Math.round((book.current_page / book.total_pages) * 100)
+        name: b.title,
+        pages: total,
+        color: b.cover_color || '#3498db'
       };
-    }).sort((a, b) => b.pages - a.pages).slice(0, 5); // Top 5 kitap
-  };
+    }).sort((a, b) => b.pages - a.pages).slice(0, 5);
 
-  const COLORS = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6'];
+    setBookStats(bookData);
+
+  }, [sessions, range, books]);
+
+  const stats = getStats();
+  const streaks = getStreaks();
+
+  const totalBooks = books.length;
+  const completedBooks = books.filter(b => b.status === 'completed').length;
+
+  const COLORS = ['#3498db','#2ecc71','#e74c3c','#f39c12','#9b59b6'];
 
   if (loading) {
-    return (
-      <div className="page">
-        <div className="loading">İstatistikler yükleniyor...</div>
-      </div>
-    );
+    return <div className="page"><div className="loading">Yükleniyor...</div></div>;
   }
+
+  const getMotivationMessage = (streak) => {
+  if (streak === 0) {
+    return "Hadi yeni bir seriye ilk adımı at! Temiz bir sayfa açma zamanı 📖✨";
+  }
+  if (streak === 1) {
+    return "Her başlangıç yolun yarısıdır, devamını getirebilirsin! 🚀";
+  }
+  if (streak <= 3) {
+    return "Isınıyorsun 🔥 3 gün güzel bir başlangıç!";
+  }
+  if (streak <= 7) {
+    return "1 hafta oldu! Artık bir alışkanlık oluşuyor 📚";
+  }
+  if (streak <= 15) {
+    return "15 gün... Bu artık disiplin. Ciddileşiyoruz 💪";
+  }
+  if (streak <= 30) {
+    return "Kesintisiz 1 aydır okuyorsun! Azmin hayranlık verici. 🏆";
+  }
+  if (streak <= 50) {
+    return "50 gün... Kitap okumak artık senin için bir yaşam stili 🔥";
+  }
+  if (streak <= 100) {
+    return "100 gün!!! Kitaplar artık kişiliğinin bir parçası. 📖🔥";
+  }
+  return "Efsane seviye. Artık okumak ve sen bir bütünsünüz. 🧠";
+};
 
   return (
     <div className="page">
@@ -183,222 +106,130 @@ const calculateStreaks = (sessions) => {
         <h1>📈 İstatistikler</h1>
         <p>Okuma performansın ve ilerleme grafikler</p>
       </div>
-
-      {/* Temel İstatistikler */}
+      {/* === ÜST STAT GRID (3x2) === */}
       <div className="stats-grid">
-        <div className="stat-card blue">
-          <div className="stat-icon">📚</div>
-          <div className="stat-info">
-            <h3>{stats.totalPages}</h3>
-            <p>Toplam Okunan Sayfa</p>
-          </div>
-        </div>
-
-        <div className="stat-card green">
-          <div className="stat-icon">📊</div>
-          <div className="stat-info">
-            <h3>{stats.dailyAverage}</h3>
-            <p>Günlük Ortalama</p>
-          </div>
-        </div>
-
-        <div className="stat-card orange">
-          <div className="stat-icon">🔥</div>
-          <div className="stat-info">
-            <h3>{stats.currentStreak}</h3>
-            <p>Güncel Seri (Gün)</p>
-          </div>
-        </div>
-
-        <div className="stat-card purple">
-          <div className="stat-icon">🏆</div>
-          <div className="stat-info">
-            <h3>{stats.longestStreak}</h3>
-            <p>En Uzun Seri (Gün)</p>
-          </div>
-        </div>
-
-        <div className="stat-card teal">
-          <div className="stat-icon">✓</div>
-          <div className="stat-info">
-            <h3>{stats.completedBooks}</h3>
-            <p>Tamamlanan Kitap</p>
-          </div>
-        </div>
-
-        <div className="stat-card red">
-          <div className="stat-icon">📖</div>
-          <div className="stat-info">
-            <h3>{stats.totalBooks}</h3>
-            <p>Toplam Kitap</p>
-          </div>
-        </div>
+        <div className="stat-card blue"><h3>{stats.totalPages}</h3><p>📚 Toplam Sayfa</p></div>
+        <div className="stat-card green"><h3>{stats.dailyAverage}</h3><p>📊 Günlük Ortalama</p></div>
+        <div className="stat-card orange"><h3>{streaks.current}</h3><p>🔥 Güncel Seri</p></div>
+        <div className="stat-card purple"><h3>{streaks.longest}</h3><p>🏆 En Uzun Seri</p></div>
+        <div className="stat-card teal"><h3>{completedBooks}</h3><p>✓ Tamamlanan</p></div>
+        <div className="stat-card red"><h3>{totalBooks}</h3><p>📖 Toplam Kitap</p></div>
       </div>
 
-      {/* Zaman Aralığı Seçici */}
+      {/* === RANGE SELECTOR === */}
       <div className="time-range-selector">
-        <button 
-          className={timeRange === 7 ? 'active' : ''}
-          onClick={() => setTimeRange(7)}
-        >
-          Son 7 Gün
-        </button>
-        <button 
-          className={timeRange === 30 ? 'active' : ''}
-          onClick={() => setTimeRange(30)}
-        >
-          Son 30 Gün
-        </button>
-        <button 
-          className={timeRange === 90 ? 'active' : ''}
-          onClick={() => setTimeRange(90)}
-        >
-          Son 90 Gün
-        </button>
+        {[7, 30, 90].map(r => (
+          <button
+            key={r}
+            className={range === r ? 'active' : ''}
+            onClick={() => setRange(r)}
+          >
+            Son {r} Gün
+          </button>
+        ))}
       </div>
 
-      {/* Günlük Sayfa Grafiği (Line Chart) */}
+      {/* === LINE CHART === */}
       <div className="chart-container">
-        <h3 className="chart-title">📈 Günlük Okuma Grafiği</h3>
+        <h3 className="chart-title">📈 Günlük Okuma Trendi</h3>
+
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#ecf0f1" />
-            <XAxis 
-              dataKey="date" 
-              stroke="#7f8c8d"
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis 
-              stroke="#7f8c8d"
-              tick={{ fontSize: 12 }}
-            />
-            <Tooltip 
-              contentStyle={{
-                background: 'white',
-                border: '2px solid #ecf0f1',
-                borderRadius: '8px'
-              }}
-            />
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
             <Legend />
-            <Line 
-              type="monotone" 
-              dataKey="pages" 
-              stroke="#3498db" 
-              strokeWidth={3}
-              name="Okunan Sayfa"
-              dot={{ fill: '#3498db', r: 4 }}
-              activeDot={{ r: 6 }}
-            />
+            <Line type="monotone" dataKey="pages" name="Okunan Sayfa" stroke="#3498db" />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Bar Chart */}
+      {/* === BAR CHART === */}
       <div className="chart-container">
-        <h3 className="chart-title">📊 Günlük Sayfa Dağılımı</h3>
+        <h3 className="chart-title">📊 Günlük Dağılım</h3>
+
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#ecf0f1" />
-            <XAxis 
-              dataKey="date" 
-              stroke="#7f8c8d"
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis 
-              stroke="#7f8c8d"
-              tick={{ fontSize: 12 }}
-            />
-            <Tooltip 
-              contentStyle={{
-                background: 'white',
-                border: '2px solid #ecf0f1',
-                borderRadius: '8px'
-              }}
-            />
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
             <Legend />
-            <Bar 
-              dataKey="pages" 
-              fill="#2ecc71" 
-              name="Okunan Sayfa"
-              radius={[8, 8, 0, 0]}
-            />
+            <Bar dataKey="pages" name="Sayfa" fill="#2ecc71" />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Kitap Bazlı İstatistikler */}
-      {bookStats.length > 0 && (
-        <div className="two-column-grid">
-          {/* Pie Chart */}
-          <div className="chart-container">
-            <h3 className="chart-title">📚 En Çok Okunan Kitaplar</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={bookStats}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name.substring(0, 15)}... ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="pages"
-                >
-                  {bookStats.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+      {/* === PIE + TOP 5 === */}
+      <div className="two-column-grid">
 
-          {/* Kitap Listesi */}
-          <div className="chart-container">
-            <h3 className="chart-title">🏆 Top 5 Kitap</h3>
-            <div className="book-stats-list">
-              {bookStats.map((book, index) => (
-                <div key={index} className="book-stat-item">
-                  <div className="book-rank">{index + 1}</div>
-                  <div className="book-stat-bar-container">
-                    <div className="book-stat-name">{book.name}</div>
-                    <div className="book-stat-bar">
-                      <div 
-                        className="book-stat-fill"
-                        style={{ 
-                          width: `${book.progress}%`,
-                          background: book.color 
-                        }}
-                      ></div>
-                    </div>
-                    <div className="book-stat-pages">{book.pages} sayfa</div>
+        <div className="chart-container">
+          <h3 className="chart-title">📚 Kitap Dağılımı</h3>
+
+          <ResponsiveContainer width="100%" height={320}>
+            <PieChart>
+              <Pie
+                data={bookStats}
+                dataKey="pages"
+                nameKey="name"
+                outerRadius={110}
+                innerRadius={40}
+                paddingAngle={3}
+                labelLine={false}
+                label={({ name, percent }) =>
+                  percent > 0.05 ? `${name}` : ''
+                }
+              >
+                {bookStats.map((entry, i) => (
+                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* === TOP 5 === */}
+        <div className="chart-container">
+          <h3 className="chart-title">🏆 En Çok Okunanlar</h3>
+
+          <div className="book-stats-list">
+            {bookStats.map((b, i) => (
+              <div key={i} className="book-stat-item">
+                <div className="book-rank">{i + 1}</div>
+
+                <div className="book-stat-bar-container">
+                  <div className="book-stat-name">{b.name}</div>
+
+                  <div className="book-stat-bar">
+                    <div
+                      className="book-stat-fill"
+                      style={{
+                        width: `${(b.pages / bookStats[0]?.pages) * 100}%`,
+                        background: b.color
+                      }}
+                    />
                   </div>
+
+                  <div className="book-stat-pages">{b.pages} sayfa</div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-      )}
-
-      {/* Motivasyon Mesajları */}
-      <div className="motivation-box">
-        {stats.currentStreak > 0 ? (
-          <>
-            <h3>🔥 Harika gidiyorsun!</h3>
-            <p>
-              {stats.currentStreak} gündür kesintisiz okuyorsun! 
-              {stats.currentStreak >= 7 && " Muhteşem bir seri! "}
-              {stats.currentStreak >= 30 && " İnanılmaz bir disiplin! "}
-              Böyle devam et! 💪
-            </p>
-          </>
-        ) : (
-          <>
-            <h3>📚 Okumaya başla!</h3>
-            <p>Bugün bir kitap açıp birkaç sayfa oku ve serini başlat! 🚀</p>
-          </>
-        )}
       </div>
+
+      {/* === MOTIVATION === */}
+      <div className="motivation-box">
+        <h3>🔥 Serine Gözat!</h3>
+        <p>
+          {streaks.current} gündür kesintisiz okuyorsun.
+          <br />
+          {getMotivationMessage(streaks.current)}
+        </p>
+      </div>
+
     </div>
   );
 }
