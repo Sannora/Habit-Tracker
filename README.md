@@ -10,16 +10,16 @@ Now with 1.1.0 live, I have some exciting news :). The app is now more compact w
 
 ### v1.1.0 Changelog
 
-####**✨ New Features**
+#### **✨ New Features**
 
 -XP & Level system added: Users can earn "reader points" and level up by reading.
 -Book dating system added: Now users can see the interval and total time for a book's completion.
 -Book rating system added: Users now can rate books out of 5 stars.
 
-####**🐛 Fixes**
+#### **🐛 Fixes**
 -App covering only the half of the window is fixed.
 
-####**⚡ Improvements**
+#### **⚡ Improvements**
 -Dashboard stats are now localised to current month; for overall stats you can still see "İstatistikler" page.
 -Better UI structure
 -Added Zustand state management
