@@ -4,16 +4,36 @@ A desktop application to track your daily reading habits, visualize progress, an
 
 ---
 
+## **Release 1.1.0 is Now Live! ​🎉**
+
+Now with 1.1.0 live, I have some exciting news :). The app is now more compact with date and rate systems added. The scene for future updates is set by Zustand. I tried to improve the user experience as whole with feedbacks from my users(my and my girlfriend :) ). And maybe the most importantly, the app is now gamified with a new leveling system. Make sure to check the changelog below for details:
+
+### v1.1.0 Changelog
+
+####**✨ New Features**
+
+-XP & Level system added: Users can earn "reader points" and level up by reading.
+-Book dating system added: Now users can see the interval and total time for a book's completion.
+-Book rating system added: Users now can rate books out of 5 stars.
+
+####**🐛 Fixes**
+-App covering only the half of the window is fixed.
+
+####**⚡ Improvements**
+-Dashboard stats are now localised to current month; for overall stats you can still see "İstatistikler" page.
+-Better UI structure
+-Added Zustand state management
+
 ## 🖼️ Screenshots
 
 ### Dashboard
-<img width="462" height="925" alt="image" src="https://github.com/user-attachments/assets/bd78acd3-cbd8-49d2-933e-af25ebcc9a44" />
+<img width="1897" height="977" alt="image" src="https://github.com/user-attachments/assets/94283021-5e0d-4049-890d-770f51b6979a" />
 
 ### Heat Map Calendar
 <img width="290" height="311" alt="image" src="https://github.com/user-attachments/assets/876077b8-90b3-4e76-a2ec-197abe3983d3" />
 
 ### Book Library
-<img width="441" height="925" alt="image" src="https://github.com/user-attachments/assets/8c170955-57d8-453f-a009-797eeca1a7b2" />
+<img width="923" height="968" alt="image" src="https://github.com/user-attachments/assets/52fb7cb3-3900-40b2-bb3a-0af76f2f7617" />
 
 ### Statistics & Charts
 <img width="484" height="921" alt="image" src="https://github.com/user-attachments/assets/11c5e434-a75d-4c7c-80b6-a925bc9bcb10" />
