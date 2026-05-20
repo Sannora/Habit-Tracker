@@ -133,7 +133,7 @@ function Settings() {
         <div className="info-grid">
           <div className="info-item">
             <span className="info-label">Versiyon</span>
-            <span className="info-value">1.0.1</span>
+            <span className="info-value">1.1.0</span>
           </div>
 
           <div className="info-item">
